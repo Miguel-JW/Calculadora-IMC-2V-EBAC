@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de IMC</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="container">
+
+    <header class="card-header">
+      <span class="logo-icon">⚖️</span>
+      <h1>Calculadora de IMC</h1>
+      <p>Índice de Massa Corporal</p>
+    </header>
+
+    <section class="card-body">
+
+      <div class="form-group">
+        <label for="peso">Peso (kg)</label>
+        <input type="number" id="peso" placeholder="Ex: 70" min="1" step="0.1" />
+      </div>
+
+      <div class="form-group">
+        <label for="altura">Altura (m)</label>
+        <input type="number" id="altura" placeholder="Ex: 1.75" min="0.5" step="0.01" />
+      </div>
+
+      <button id="btnCalcular" onclick="calcularIMC()">Calcular</button>
+
+      <div class="resultado" id="resultado" style="display: none;">
+        <p class="resultado-label">Seu IMC</p>
+        <p class="resultado-valor" id="resultadoIMC"></p>
+        <p class="resultado-classe" id="resultadoClasse"></p>
+        <div class="barra-container">
+          <div class="barra-fill" id="barraFill"></div>
+          <div class="barra-marker" id="barraMarker"></div>
+        </div>
+        <div class="barra-labels">
+          <span>Baixo</span>
+          <span>Normal</span>
+          <span>Acima</span>
+          <span>Obeso</span>
+        </div>
+      </div>
+
+      <p class="erro" id="erro" style="display: none;"></p>
+
+    </section>
+
+    <footer class="card-footer">
+      <p>Tabela de classificação da OMS</p>
+      <table>
+        <thead>
+          <tr><th>IMC</th><th>Classificação</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>&lt; 18,5</td><td>Abaixo do peso</td></tr>
+          <tr><td>18,5 – 24,9</td><td>Peso normal</td></tr>
+          <tr><td>25 – 29,9</td><td>Sobrepeso</td></tr>
+          <tr><td>30 – 34,9</td><td>Obesidade grau I</td></tr>
+          <tr><td>35 – 39,9</td><td>Obesidade grau II</td></tr>
+          <tr><td>&ge; 40</td><td>Obesidade grau III</td></tr>
+        </tbody>
+      </table>
+    </footer>
+
+  </main>
+
+  <script>
+    function calcularIMC() {
+      var peso   = parseFloat(document.getElementById("peso").value);
+      var altura = parseFloat(document.getElementById("altura").value);
+
+      var erroEl      = document.getElementById("erro");
+      var resultadoEl = document.getElementById("resultado");
+
+      if (isNaN(peso) || isNaN(altura) || peso <= 0 || altura <= 0) {
+        erroEl.textContent   = "⚠️ Por favor, insira valores válidos para peso e altura.";
+        erroEl.style.display = "block";
+        resultadoEl.style.display = "none";
+        return;
+      }
+
+      erroEl.style.display = "none";
+
+      var imc = peso / (altura * altura);
+
+      var classe = "";
+      var cor    = "";
+      var pos    = 0;
+
+      if (imc < 18.5) {
+        classe = "Abaixo do peso";
+        cor    = "#60a5fa";
+        pos    = Math.max(2, (imc / 18.5) * 20);
+      } else if (imc < 25) {
+        classe = "Peso normal ✓";
+        cor    = "#4ade80";
+        pos    = 20 + ((imc - 18.5) / 6.5) * 25;
+      } else if (imc < 30) {
+        classe = "Sobrepeso";
+        cor    = "#facc15";
+        pos    = 45 + ((imc - 25) / 5) * 20;
+      } else if (imc < 35) {
+        classe = "Obesidade grau I";
+        cor    = "#fb923c";
+        pos    = 65 + ((imc - 30) / 5) * 15;
+      } else if (imc < 40) {
+        classe = "Obesidade grau II";
+        cor    = "#f87171";
+        pos    = 80 + ((imc - 35) / 5) * 10;
+      } else {
+        classe = "Obesidade grau III";
+        cor    = "#dc2626";
+        pos    = 95;
+      }
+
+      document.getElementById("resultadoIMC").textContent    = imc.toFixed(2);
+      document.getElementById("resultadoClasse").textContent = classe;
+      document.getElementById("resultadoClasse").style.color = cor;
+
+      document.getElementById("barraFill").style.width           = pos + "%";
+      document.getElementById("barraFill").style.backgroundColor = cor;
+      document.getElementById("barraMarker").style.left          = pos + "%";
+
+      resultadoEl.style.display = "block";
+      resultadoEl.classList.remove("animar");
+      void resultadoEl.offsetWidth;
+      resultadoEl.classList.add("animar");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("peso").addEventListener("keydown",   function(e){ if(e.key==="Enter") calcularIMC(); });
+      document.getElementById("altura").addEventListener("keydown", function(e){ if(e.key==="Enter") calcularIMC(); });
+    });
+  </script>
+
+</body>
+</html>
